@@ -3,19 +3,19 @@
   "mosqueSubName": "جامع النور الإسلامي",
   "city": "باقة الغربية",
   "adjustments": {
-    "fajr": 0,
-    "sunrise": 0,
-    "dhuhr": 0,
-    "asr": 0,
-    "maghrib": 0,
-    "isha": 0
+    "fajr": 1,
+    "sunrise": 1,
+    "dhuhr": 1,
+    "asr": 1,
+    "maghrib": 1,
+    "isha": 1
   },
   "iqama": {
-    "fajr": 20,
-    "dhuhr": 15,
-    "asr": 15,
-    "maghrib": 5,
-    "isha": 15
+    "fajr": 22,
+    "dhuhr": 20,
+    "asr": 20,
+    "maghrib": 7,
+    "isha": 7
   },
   "nightMode": {
     "enabled": true,
@@ -33,5 +33,5 @@
   },
   "antiBurn": true,
   "showWeather": true,
-  "lastUpdated": "2026-03-01T23:42:42.480Z"
+  "lastUpdated": "2026-03-01T23:43:15.962Z"
 }
