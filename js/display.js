@@ -199,24 +199,26 @@ function updateHijri(date) {
 
 // ── Night Mode ────────────────────────────────────
 function checkNightMode(now) {
-  const nm   = CFG.nightMode || {};
+  const nm = CFG.nightMode || {};
   if (!nm.enabled) {
     document.getElementById('mainScreen')?.classList.remove('night-mode');
     return;
   }
-  // Get Isha time
-  const ishaAdhan = getAdjustedAdhan('Isha');
-  if (!ishaAdhan) return;
-  const delay = Number(nm.delayMinutes || 30);
-  const [ih, im] = ishaAdhan.split(':').map(Number);
-  const nightStart = ih*60 + im + delay;
+
   const cur = now.getHours()*60 + now.getMinutes();
 
-  // Night mode: after isha+delay, until fajr
-  const fajrAdhan = getAdjustedAdhan('Fajr');
-  const fajrMin   = fajrAdhan ? toMinutes(fajrAdhan) : 320;
+  // بداية السكون: بعد العشاء بـ delayMinutes
+  const ishaAdhan = getAdjustedAdhan('Isha');
+  if (!ishaAdhan) return;
+  const nightStart = toMinutes(ishaAdhan) + Number(nm.delayMinutes || 30);
 
-  const isNight = cur >= nightStart || cur < fajrMin;
+  // نهاية السكون: قبل الفجر بـ endBeforeMinutes
+  const fajrAdhan  = getAdjustedAdhan('Fajr');
+  const fajrMin    = fajrAdhan ? toMinutes(fajrAdhan) : 320;
+  const nightEnd   = fajrMin - Number(nm.endBeforeMinutes ?? 15);
+
+  // وضع السكون نشط إذا: cur >= nightStart  أو  cur < nightEnd
+  const isNight = cur >= nightStart || cur < nightEnd;
   document.getElementById('mainScreen')?.classList.toggle('night-mode', isNight);
 }
 
