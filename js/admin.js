@@ -111,7 +111,7 @@ function defaultConfig() {
     city: 'باقة الغربية',
     adjustments: { fajr:0, sunrise:0, dhuhr:0, asr:0, maghrib:0, isha:0 },
     iqama: { fajr:20, dhuhr:15, asr:15, maghrib:5, isha:15 },
-    nightMode: { enabled:true, delayMinutes:30 },
+    nightMode: { enabled:true, delayMinutes:30, endBeforeMinutes:15 },
     ticker: { enabled:true, text:'أهلاً وسهلاً بكم في مسجد النور' },
     footerText: { right:'اللهم صل وسلم على نبينا محمد ﷺ', center:'السلام عليكم ورحمة الله وبركاته', left:'حفظكم الله ورعاكم' },
     antiBurn: true,
@@ -140,7 +140,8 @@ function renderForm() {
 
   // Night mode
   setChecked('nightEnabled', (CFG.nightMode || {}).enabled !== false);
-  setVal('nightDelay', (CFG.nightMode || {}).delayMinutes || 30);
+  setVal('nightDelay',      (CFG.nightMode || {}).delayMinutes  || 30);
+  setVal('nightEndBefore',  (CFG.nightMode || {}).endBeforeMinutes ?? 15);
 
   // Ticker
   setChecked('tickerEnabled', (CFG.ticker || {}).enabled !== false);
@@ -185,7 +186,8 @@ function collectConfig() {
     iqama: iqama,
     nightMode: {
       enabled: document.getElementById('nightEnabled')?.checked || false,
-      delayMinutes: parseInt(document.getElementById('nightDelay')?.value || 30)
+      delayMinutes:     parseInt(document.getElementById('nightDelay')?.value     || 30),
+      endBeforeMinutes: parseInt(document.getElementById('nightEndBefore')?.value ?? 15)
     },
     ticker: {
       enabled: document.getElementById('tickerEnabled')?.checked || false,
