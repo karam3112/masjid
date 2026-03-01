@@ -1,6 +1,6 @@
 {
-  "mosqueName": "مسجد النور",
-  "mosqueSubName": "جامع النور الإسلامي",
+  "mosqueName": "مسجد الصراط",
+  "mosqueSubName": "تأسس سنة 2000",
   "city": "باقة الغربية",
   "adjustments": {
     "fajr": 1,
@@ -33,5 +33,5 @@
   },
   "antiBurn": true,
   "showWeather": true,
-  "lastUpdated": "2026-03-01T23:47:31.772Z"
+  "lastUpdated": "2026-03-01T23:48:36.286Z"
 }
