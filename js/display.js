@@ -178,6 +178,10 @@ function updateClock() {
   // Prayer table & countdown
   renderPrayerTable();
   updateNextWidget(now);
+
+  // شريط التنبيه والأذكار
+  updateAdhanAlertBar(now);
+  checkAdhkarTrigger(now);
 }
 
 function updateHijri(date) {
@@ -214,6 +218,174 @@ function checkNightMode(now) {
 
   const isNight = cur >= nightStart || cur < fajrMin;
   document.getElementById('mainScreen')?.classList.toggle('night-mode', isNight);
+}
+
+// ── شريط تنبيه الأذان / الإقامة ──────────────────
+function updateAdhanAlertBar(now) {
+  const bar     = document.getElementById('adhanAlertBar');
+  const textEl  = document.getElementById('alertText');
+  const countEl = document.getElementById('alertCounter');
+  const iconEl  = document.getElementById('alertIcon');
+  if (!bar) return;
+
+  const curSec = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
+  const prayable = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
+  const ALERT_WIN = (typeof ADHAN_ALERT_MINUTES !== 'undefined' ? ADHAN_ALERT_MINUTES : 5) * 60;
+
+  // فحص كل صلاة: قبل الأذان بـ ALERT_WIN ثانية
+  for (const key of prayable) {
+    const adhan = getAdjustedAdhan(key);
+    const iqama = getIqamaTime(key);
+    if (!adhan) continue;
+
+    const adhanSec = toMinutes(adhan) * 60;
+    const diffToAdhan = adhanSec - curSec;
+
+    // نافذة التنبيه قبل الأذان
+    if (diffToAdhan > 0 && diffToAdhan <= ALERT_WIN) {
+      const mm = Math.floor(diffToAdhan / 60);
+      const ss = diffToAdhan % 60;
+      bar.classList.add('show');
+      bar.classList.remove('iqama-mode');
+      if (iconEl)  iconEl.textContent = '🕌';
+      if (textEl)  textEl.textContent = `باقي على أذان ${PRAYER_NAMES[key]}`;
+      if (countEl) countEl.textContent = `${pad(mm)}:${pad(ss)}`;
+      return;
+    }
+
+    // نافذة بين الأذان والإقامة
+    if (iqama) {
+      const iqamaSec = toMinutes(iqama) * 60;
+      if (curSec >= adhanSec && curSec < iqamaSec) {
+        const diffToIqama = iqamaSec - curSec;
+        const mm = Math.floor(diffToIqama / 60);
+        const ss = diffToIqama % 60;
+        bar.classList.add('show', 'iqama-mode');
+        if (iconEl)  iconEl.textContent = '📿';
+        if (textEl)  textEl.textContent = `باقي على إقامة ${PRAYER_NAMES[key]}`;
+        if (countEl) countEl.textContent = `${pad(mm)}:${pad(ss)}`;
+        return;
+      }
+    }
+  }
+
+  // لا شيء → أخفِ الشريط
+  bar.classList.remove('show', 'iqama-mode');
+}
+
+// ── شريط الأذكار بعد الصلاة ──────────────────────
+let adhkarState = {
+  active:    false,
+  prayer:    null,     // اسم الصلاة الحالية
+  list:      [],       // قائمة الأذكار
+  idx:       0,        // الذِكر الحالي
+  startTime: 0,        // وقت بدء العرض (ثانية من منتصف الليل)
+  timer:     null,
+};
+
+function getAdhkarForPrayer(key) {
+  if (typeof ADHKAR === 'undefined') return [];
+  return ADHKAR[key.toLowerCase()] || [];
+}
+
+function startAdhkar(prayerKey) {
+  const list = getAdhkarForPrayer(prayerKey);
+  if (!list.length) return;
+
+  const now   = new Date();
+  const curSec = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
+
+  adhkarState = {
+    active:    true,
+    prayer:    prayerKey,
+    list:      list,
+    idx:       0,
+    startTime: curSec,
+    timer:     null,
+  };
+
+  showAdhkarBar();
+  renderAdhkar();
+  scheduleNextAdhkar();
+}
+
+function showAdhkarBar() {
+  const bar = document.getElementById('adhkarBar');
+  if (bar) bar.classList.add('show');
+}
+
+function hideAdhkarBar() {
+  const bar = document.getElementById('adhkarBar');
+  if (bar) bar.classList.remove('show');
+  adhkarState.active = false;
+  if (adhkarState.timer) { clearTimeout(adhkarState.timer); adhkarState.timer = null; }
+}
+
+function renderAdhkar() {
+  const textEl    = document.getElementById('adhkarText');
+  const progressEl= document.getElementById('adhkarProgress');
+  const fillEl    = document.getElementById('adhkarProgressFill');
+  if (!textEl) return;
+
+  const total = adhkarState.list.length;
+  const idx   = adhkarState.idx;
+
+  // تلاشي خروج ثم تغيير النص
+  textEl.classList.add('fade-out');
+  setTimeout(() => {
+    textEl.textContent = adhkarState.list[idx] || '';
+    textEl.classList.remove('fade-out');
+  }, 700);
+
+  if (progressEl) progressEl.textContent = `${idx + 1} / ${total}`;
+
+  // شريط التقدم: يبدأ من 0 ويكمل إلى 100 خلال مدة الذِكر
+  if (fillEl) {
+    fillEl.style.width = '0%';
+    requestAnimationFrame(() => {
+      fillEl.style.transition = `width ${ADHKAR_SPEED_SECONDS || 30}s linear`;
+      fillEl.style.width = '100%';
+    });
+  }
+}
+
+function scheduleNextAdhkar() {
+  const speed = (typeof ADHKAR_SPEED_SECONDS !== 'undefined' ? ADHKAR_SPEED_SECONDS : 30) * 1000;
+  adhkarState.timer = setTimeout(() => {
+    adhkarState.idx++;
+    if (adhkarState.idx >= adhkarState.list.length) {
+      adhkarState.idx = 0; // كرر من البداية في حال لم تنتهِ المدة
+    }
+    renderAdhkar();
+    scheduleNextAdhkar();
+  }, speed);
+}
+
+function checkAdhkarTrigger(now) {
+  const DURATION_MIN = typeof ADHKAR_DURATION_MINUTES !== 'undefined' ? ADHKAR_DURATION_MINUTES : 15;
+  const prayable = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
+  const curSec   = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
+
+  for (const key of prayable) {
+    const iqama = getIqamaTime(key);
+    if (!iqama) continue;
+    const iqamaSec = toMinutes(iqama) * 60;
+    // نافذة الأذكار: من وقت الإقامة حتى DURATION_MIN دقيقة بعدها
+    const windowEnd = iqamaSec + DURATION_MIN * 60;
+
+    if (curSec >= iqamaSec && curSec < windowEnd) {
+      // هل بدأنا لهذه الصلاة؟
+      if (!adhkarState.active || adhkarState.prayer !== key) {
+        startAdhkar(key);
+      }
+      return;
+    }
+  }
+
+  // لا نافذة نشطة → أخفِ إن كان ظاهراً
+  if (adhkarState.active) {
+    hideAdhkarBar();
+  }
 }
 
 // ── Apply Config ──────────────────────────────────
