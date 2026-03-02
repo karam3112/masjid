@@ -99,27 +99,23 @@
     <div class="alert-counter" id="alertCounter">05:00</div>
   </div>
 
-  <!-- شريط الأذكار بعد الصلاة -->
-  <div class="adhkar-bar" id="adhkarBar">
-    <div class="adhkar-bar-header">
-      <div class="adhkar-bar-title">✦ أذكار بعد الصلاة</div>
-      <div class="adhkar-bar-progress" id="adhkarProgress"></div>
-    </div>
-    <div class="adhkar-bar-body">
-      <div class="adhkar-text" id="adhkarText"></div>
-    </div>
-    <div class="adhkar-progress-line">
-      <div class="adhkar-progress-fill" id="adhkarProgressFill"></div>
-    </div>
-  </div>
-
-  <!-- Ticker -->
+  <!-- Ticker / شريط الأذكار (يتبادلان نفس المكان) -->
   <div class="ticker-bar" id="tickerBar">
-    <div class="ticker-inner">
+
+    <!-- الشريط الاعتيادي -->
+    <div class="ticker-inner" id="tickerNormal">
       <span class="ticker-text" id="tickerText">🕌</span>
       <span class="ticker-sep">✦</span>
       <span class="ticker-text" id="tickerText2">🕌</span>
     </div>
+
+    <!-- شريط الأذكار — يحل محل الشريط الاعتيادي -->
+    <div class="ticker-inner ticker-adhkar" id="tickerAdhkar" style="display:none;">
+      <span class="ticker-adhkar-label">✦ أذكار بعد الصلاة ✦</span>
+      <span class="ticker-sep">　</span>
+      <span class="ticker-adhkar-text" id="adhkarScrollText"></span>
+    </div>
+
   </div>
 
   <!-- Footer -->
