@@ -18,7 +18,7 @@
     "isha": 7
   },
   "nightMode": {
-    "enabled": true,
+    "enabled": false,
     "delayMinutes": 45,
     "endBeforeMinutes": 60
   },
@@ -33,5 +33,5 @@
   },
   "antiBurn": true,
   "showWeather": true,
-  "lastUpdated": "2026-03-02T02:03:40.551Z"
+  "lastUpdated": "2026-03-02T02:04:28.650Z"
 }
