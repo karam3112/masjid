@@ -20,7 +20,7 @@
   "nightMode": {
     "enabled": true,
     "delayMinutes": 45,
-    "endBeforeMinutes": 60
+    "endBeforeMinutes": 45
   },
   "ticker": {
     "enabled": true,
@@ -33,5 +33,5 @@
   },
   "antiBurn": true,
   "showWeather": true,
-  "lastUpdated": "2026-03-02T01:56:04.343Z"
+  "lastUpdated": "2026-03-02T01:57:07.162Z"
 }
