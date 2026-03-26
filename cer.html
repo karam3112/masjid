@@ -1,228 +1,981 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>تصميم شهادات الغزالي</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تصميم شهادات الغزالي</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Tajawal:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-<style>
-body {
-  font-family: 'Tajawal', sans-serif;
-  margin:0;
-  background:#f7f7f7;
-}
+  <style>
+    :root{
+      --primary:#1F7A63;
+      --accent:#D4AF37;
+      --bg:#FFFFFF;
+      --text:#2F2F2F;
+      --support-green:#4CAF7A;
+      --support-beige:#E6D3A3;
+      --support-gray:#BDBDBD;
+      --page:#f4f6f5;
+      --shadow:0 18px 50px rgba(0,0,0,.12);
+      --radius:20px;
+    }
 
-.container {
-  display:flex;
-  height:100vh;
-}
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:'Tajawal',sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(31,122,99,.06), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(212,175,55,.08), transparent 22%),
+        var(--page);
+      color:var(--text);
+    }
 
-.controls {
-  width:320px;
-  background:white;
-  padding:15px;
-  overflow:auto;
-  border-left:1px solid #ddd;
-}
+    .app{
+      min-height:100vh;
+      display:grid;
+      grid-template-columns:360px 1fr;
+    }
 
-.controls input, .controls textarea, .controls select {
-  width:100%;
-  margin-bottom:10px;
-  padding:8px;
-  border:1px solid #ccc;
-  border-radius:6px;
-}
+    .sidebar{
+      background:#fff;
+      border-left:1px solid rgba(0,0,0,.06);
+      padding:18px;
+      overflow:auto;
+    }
 
-.preview {
-  flex:1;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
+    .brandbox{
+      border:1px solid rgba(31,122,99,.12);
+      background:linear-gradient(180deg,#fff,#f8fbfa);
+      border-radius:18px;
+      padding:14px;
+      margin-bottom:16px;
+    }
 
-.certificate {
-  width:800px;
-  height:560px;
-  background:white;
-  padding:40px;
-  position:relative;
-  box-shadow:0 0 20px rgba(0,0,0,0.1);
-}
+    .brandbox h1{
+      margin:0 0 6px;
+      font-family:'Cairo',sans-serif;
+      font-size:1.35rem;
+      color:var(--primary);
+    }
 
-/* هوية الغزالي */
-.primary { color:#1F7A63; }
-.gold { color:#D4AF37; }
+    .brandbox p{
+      margin:0;
+      color:#5c5c5c;
+      font-size:.95rem;
+      line-height:1.7;
+    }
 
-/* العنوان */
-.title {
-  font-family:'Cairo';
-  font-size:28px;
-  text-align:center;
-}
+    .field{margin-bottom:12px}
+    .field label{
+      display:block;
+      font-weight:700;
+      margin-bottom:6px;
+      color:#28463e;
+      font-size:.96rem;
+    }
 
-/* الاسم */
-.name {
-  font-family:'Cairo';
-  font-size:40px;
-  text-align:center;
-  margin:20px 0;
-}
+    .field input,
+    .field textarea,
+    .field select{
+      width:100%;
+      border:1px solid #d8dfdc;
+      border-radius:12px;
+      padding:11px 12px;
+      font-family:'Tajawal',sans-serif;
+      font-size:1rem;
+      outline:none;
+      background:#fff;
+      transition:.2s ease;
+    }
 
-/* النص */
-.text {
-  text-align:center;
-  font-size:18px;
-}
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus{
+      border-color:var(--primary);
+      box-shadow:0 0 0 4px rgba(31,122,99,.10);
+    }
 
-/* الصفات */
-.traits span {
-  background:#4CAF7A;
-  color:white;
-  padding:5px 10px;
-  margin:3px;
-  border-radius:15px;
-  display:inline-block;
-}
+    .field textarea{
+      min-height:88px;
+      resize:vertical;
+      line-height:1.7;
+    }
 
-/* التوقيع */
-.footer {
-  position:absolute;
-  bottom:30px;
-  width:90%;
-  display:flex;
-  justify-content:space-between;
-}
+    .btns{
+      display:grid;
+      gap:10px;
+      margin-top:14px;
+    }
 
-button {
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  background:#1F7A63;
-  color:white;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-}
-</style>
+    button{
+      border:none;
+      border-radius:14px;
+      padding:12px 14px;
+      font-family:'Tajawal',sans-serif;
+      font-weight:800;
+      cursor:pointer;
+      transition:.2s ease;
+      font-size:1rem;
+    }
+
+    .btn-primary{
+      background:var(--primary);
+      color:#fff;
+    }
+
+    .btn-primary:hover{filter:brightness(1.04)}
+
+    .btn-secondary{
+      background:#fff;
+      color:var(--primary);
+      border:1px solid rgba(31,122,99,.18);
+    }
+
+    .btn-secondary:hover{background:#f7fbfa}
+
+    .preview-wrap{
+      padding:28px;
+      overflow:auto;
+    }
+
+    .preview-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:14px;
+      gap:12px;
+    }
+
+    .preview-top h2{
+      margin:0;
+      font-family:'Cairo',sans-serif;
+      color:var(--primary);
+      font-size:1.4rem;
+    }
+
+    .hint{
+      font-size:.95rem;
+      color:#5f6864;
+    }
+
+    .certificate-shell{
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+    }
+
+    /* A4 Landscape proportion قريب من كودك السابق */
+    .certificate{
+      width:1123px;
+      height:794px;
+      background:#fff;
+      position:relative;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      border-radius:10px;
+      transform-origin:top center;
+    }
+
+    /* ---------- الهيكل الرسمي ---------- */
+    .header{
+      position:absolute;
+      top:0;
+      right:0;
+      left:0;
+      height:140px;
+      background:#fff;
+      padding:28px 42px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      z-index:4;
+    }
+
+    .logo-wrap{
+      width:120px;
+      height:88px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-shrink:0;
+    }
+
+    .logo-wrap img{
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
+      display:block;
+    }
+
+    .school-block{
+      text-align:left;
+      flex:1;
+      padding-inline:18px;
+    }
+
+    .school-name{
+      font-family:'Cairo',sans-serif;
+      color:var(--primary);
+      font-size:2rem;
+      font-weight:900;
+      line-height:1.2;
+      margin:0;
+    }
+
+    .school-tagline{
+      margin-top:8px;
+      color:#5d655f;
+      font-size:1.02rem;
+      font-weight:500;
+    }
+
+    .header-line{
+      position:absolute;
+      top:126px;
+      right:40px;
+      left:40px;
+      height:3px;
+      background:linear-gradient(90deg, rgba(212,175,55,.15), var(--accent), rgba(212,175,55,.15));
+      z-index:4;
+      border-radius:999px;
+    }
+
+    .content{
+      position:absolute;
+      top:145px;
+      right:48px;
+      left:48px;
+      bottom:90px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      text-align:center;
+      z-index:3;
+    }
+
+    .footer{
+      position:absolute;
+      right:42px;
+      left:42px;
+      bottom:26px;
+      height:52px;
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      font-size:.95rem;
+      color:#59615c;
+      z-index:4;
+    }
+
+    .footer .signature-title{
+      display:block;
+      font-weight:700;
+      color:#68716b;
+      margin-bottom:2px;
+      font-size:.88rem;
+    }
+
+    .footer .signature-name{
+      color:var(--text);
+      font-weight:700;
+      font-size:1rem;
+    }
+
+    /* ---------- محتوى الشهادة ---------- */
+    .kicker{
+      display:inline-block;
+      padding:8px 18px;
+      border-radius:999px;
+      background:rgba(31,122,99,.08);
+      color:var(--primary);
+      font-weight:800;
+      font-size:1.05rem;
+      margin-top:8px;
+      margin-bottom:16px;
+      border:1px solid rgba(31,122,99,.10);
+    }
+
+    .title{
+      font-family:'Cairo',sans-serif;
+      font-size:3rem;
+      font-weight:900;
+      color:var(--primary);
+      line-height:1.2;
+      margin:0 0 18px;
+      letter-spacing:.2px;
+    }
+
+    .title-accent{
+      width:160px;
+      height:5px;
+      border-radius:999px;
+      background:linear-gradient(90deg, rgba(212,175,55,.25), var(--accent), rgba(212,175,55,.25));
+      margin:0 auto 22px;
+    }
+
+    .reason{
+      font-size:1.45rem;
+      color:#5b605e;
+      margin:0 0 12px;
+      line-height:1.8;
+      max-width:86%;
+      font-weight:500;
+    }
+
+    .student-name{
+      font-family:'Cairo',sans-serif;
+      color:#1c4d40;
+      line-height:1.18;
+      margin:0 0 16px;
+      font-weight:900;
+      max-width:86%;
+      word-break:break-word;
+    }
+
+    .name-1{font-size:4.2rem}
+    .name-2{font-size:3.6rem}
+    .name-3{font-size:3rem}
+    .name-4{font-size:2.4rem}
+
+    .highlight{
+      display:inline-block;
+      margin:6px auto 18px;
+      padding:10px 20px;
+      border-radius:14px;
+      background:rgba(230,211,163,.28);
+      color:#775c1b;
+      font-size:1.16rem;
+      font-weight:700;
+      max-width:80%;
+      line-height:1.8;
+    }
+
+    .message{
+      max-width:78%;
+      font-size:1.42rem;
+      line-height:1.95;
+      color:#363a38;
+      margin:4px auto 0;
+      white-space:pre-line;
+    }
+
+    .traits{
+      margin-top:18px;
+      margin-bottom:12px;
+      max-width:82%;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:center;
+    }
+
+    .trait{
+      padding:9px 16px;
+      border-radius:999px;
+      background:rgba(76,175,122,.11);
+      border:1px solid rgba(76,175,122,.20);
+      color:#24684a;
+      font-weight:700;
+      font-size:1rem;
+    }
+
+    /* ---------- عناصر زخرفية عامة ---------- */
+    .ornament{
+      position:absolute;
+      pointer-events:none;
+      z-index:1;
+    }
+
+    .corner-ring{
+      width:220px;
+      height:220px;
+      border:2px solid rgba(212,175,55,.17);
+      border-radius:50%;
+      filter:blur(.1px);
+    }
+
+    .grid-frame{
+      position:absolute;
+      inset:18px;
+      border:1.5px solid rgba(31,122,99,.10);
+      z-index:1;
+      border-radius:8px;
+    }
+
+    .grid-frame::before,
+    .grid-frame::after{
+      content:"";
+      position:absolute;
+      width:34px;
+      height:34px;
+      border-color:var(--accent);
+      opacity:.55;
+    }
+
+    .grid-frame::before{
+      top:18px;
+      right:18px;
+      border-top:3px solid var(--accent);
+      border-right:3px solid var(--accent);
+    }
+
+    .grid-frame::after{
+      bottom:18px;
+      left:18px;
+      border-bottom:3px solid var(--accent);
+      border-left:3px solid var(--accent);
+    }
+
+    /* ---------- القوالب ---------- */
+    .tpl-formal{
+      background:
+        radial-gradient(circle at top left, rgba(31,122,99,.05), transparent 24%),
+        radial-gradient(circle at bottom right, rgba(212,175,55,.06), transparent 20%),
+        #fff;
+    }
+
+    .tpl-formal .title{
+      color:var(--primary);
+    }
+
+    .tpl-formal .student-name{
+      color:#16493c;
+    }
+
+    .tpl-formal .reason{
+      font-size:1.36rem;
+    }
+
+    .tpl-academic{
+      background:
+        linear-gradient(180deg, rgba(31,122,99,.04), transparent 22%),
+        #fff;
+    }
+
+    .tpl-academic .title{
+      color:#155a49;
+    }
+
+    .tpl-academic .title-accent{
+      width:190px;
+    }
+
+    .tpl-academic .highlight{
+      background:rgba(31,122,99,.08);
+      color:#215947;
+    }
+
+    .tpl-kids{
+      background:
+        radial-gradient(circle at 12% 18%, rgba(76,175,122,.12), transparent 10%),
+        radial-gradient(circle at 84% 22%, rgba(230,211,163,.26), transparent 12%),
+        radial-gradient(circle at 18% 78%, rgba(212,175,55,.12), transparent 10%),
+        #fff;
+    }
+
+    .tpl-kids .title{
+      color:#20745f;
+    }
+
+    .tpl-kids .highlight{
+      background:rgba(76,175,122,.10);
+      color:#24684a;
+    }
+
+    .tpl-kids .trait{
+      background:rgba(212,175,55,.13);
+      border-color:rgba(212,175,55,.24);
+      color:#6b5312;
+    }
+
+    .tpl-season{
+      background:
+        linear-gradient(135deg, rgba(230,211,163,.14), transparent 24%),
+        radial-gradient(circle at 85% 15%, rgba(76,175,122,.10), transparent 14%),
+        #fff;
+    }
+
+    .tpl-season .title{
+      color:#206f5d;
+    }
+
+    .tpl-season .message{
+      max-width:75%;
+    }
+
+    .tpl-thanks .title,
+    .tpl-teacher .title,
+    .tpl-honor .title{
+      color:#1b644f;
+    }
+
+    .tpl-thanks{
+      background:
+        linear-gradient(180deg, rgba(212,175,55,.05), transparent 20%),
+        #fff;
+    }
+
+    .tpl-teacher{
+      background:
+        radial-gradient(circle at top center, rgba(31,122,99,.06), transparent 25%),
+        #fff;
+    }
+
+    .tpl-honor{
+      background:
+        radial-gradient(circle at 50% 0%, rgba(212,175,55,.08), transparent 26%),
+        linear-gradient(180deg, rgba(31,122,99,.03), transparent 25%),
+        #fff;
+    }
+
+    .tpl-medal{
+      background:
+        linear-gradient(180deg, rgba(212,175,55,.09), rgba(255,255,255,.0) 22%),
+        radial-gradient(circle at center, rgba(212,175,55,.05), transparent 35%),
+        #fff;
+    }
+
+    .tpl-medal .grid-frame{
+      border:2px solid rgba(212,175,55,.28);
+    }
+
+    .tpl-medal .title{
+      color:#8a6a18;
+      font-size:3.25rem;
+    }
+
+    .tpl-medal .student-name{
+      color:#17483b;
+    }
+
+    .tpl-medal .highlight{
+      background:rgba(212,175,55,.13);
+      color:#7a5e18;
+      border:1px solid rgba(212,175,55,.24);
+    }
+
+    .medal-badge{
+      width:92px;
+      height:92px;
+      border-radius:50%;
+      background:
+        radial-gradient(circle at 30% 30%, #f7e7a9, #d4af37 60%, #b88e1f 100%);
+      box-shadow:
+        inset 0 2px 8px rgba(255,255,255,.35),
+        0 10px 24px rgba(212,175,55,.22);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      font-family:'Cairo',sans-serif;
+      font-size:1.1rem;
+      color:#fff;
+      font-weight:900;
+      margin-bottom:18px;
+      border:3px solid rgba(255,255,255,.75);
+    }
+
+    .tpl-medal .medal-badge{
+      display:flex;
+    }
+
+    .muted{
+      color:#68716b;
+    }
+
+    @media (max-width:1200px){
+      .app{grid-template-columns:1fr}
+      .sidebar{border-left:none;border-bottom:1px solid rgba(0,0,0,.06)}
+      .preview-wrap{padding:16px}
+      .certificate{transform:scale(.78); margin-top:-70px; margin-bottom:-70px}
+    }
+  </style>
 </head>
-
 <body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brandbox">
+        <h1>📜 تصميم شهادات الغزالي</h1>
+        <p>اكتب المحتوى فقط، والشكل يلتزم بالهوية تلقائيًا.</p>
+      </div>
 
-<div class="container">
+      <div class="field">
+        <label for="template">القالب</label>
+        <select id="template">
+          <option value="formal">شهادة تقدير رسمية</option>
+          <option value="academic">شهادة إنجاز أكاديمي</option>
+          <option value="kids">شهادة تشجيع</option>
+          <option value="season">شهادة مناسبة</option>
+          <option value="thanks">شهادة شكر عامة</option>
+          <option value="teacher">شهادة تقدير لمعلم/ة</option>
+          <option value="honor">شهادة فخرية</option>
+          <option value="medal">وسام الغزالي</option>
+        </select>
+      </div>
 
-<!-- التحكم -->
-<div class="controls">
-<h3>📜 تصميم الشهادة</h3>
+      <div class="field">
+        <label for="studentName">اسم الطالب / المكرَّم</label>
+        <input id="studentName" type="text" placeholder="مثال: محمد أحمد كبها">
+      </div>
 
-<select id="template">
-<option value="formal">رسمية</option>
-<option value="academic">إنجاز أكاديمي</option>
-<option value="kids">تشجيع</option>
-<option value="season">مناسبة</option>
-<option value="thanks">شكر</option>
-<option value="teacher">معلم</option>
-<option value="honor">فخرية</option>
-<option value="medal">وسام الغزالي</option>
-</select>
+      <div class="field">
+        <label for="title">عنوان الشهادة</label>
+        <input id="title" type="text" placeholder="مثال: شهادة تقدير">
+      </div>
 
-<input id="name" placeholder="اسم الطالب">
-<input id="title" placeholder="عنوان الشهادة">
-<textarea id="reason" placeholder="سبب التكريم"></textarea>
-<input id="traits" placeholder="صفات (افصل بفاصلة)">
-<textarea id="message" placeholder="نص التهنئة"></textarea>
-<input id="sign" placeholder="اسم الموقّع">
+      <div class="field">
+        <label for="reason">النص التمهيدي</label>
+        <textarea id="reason" placeholder="مثال: تقديرًا لتميّزه واجتهاده خلال الفصل الدراسي..."></textarea>
+      </div>
 
-<button onclick="downloadPNG()">تحميل PNG</button>
-<button onclick="downloadPDF()">تحميل PDF</button>
+      <div class="field">
+        <label for="highlight">سطر إبراز قصير</label>
+        <input id="highlight" type="text" placeholder="مثال: مثالٌ مشرّف في الانضباط والتميّز">
+      </div>
 
-</div>
+      <div class="field">
+        <label for="traits">الصفات، مفصولة بفاصلة</label>
+        <input id="traits" type="text" placeholder="مبدع، مجتهد، متألق">
+      </div>
 
-<!-- المعاينة -->
-<div class="preview">
-<div id="cert" class="certificate">
+      <div class="field">
+        <label for="message">نص الشهادة</label>
+        <textarea id="message" placeholder="اكتب نص التهنئة أو التقدير هنا..."></textarea>
+      </div>
 
-<div class="title primary" id="p_title">شهادة تقدير</div>
+      <div class="field">
+        <label for="signer">اسم الموقّع</label>
+        <input id="signer" type="text" placeholder="مثال: إدارة المدرسة">
+      </div>
 
-<div class="name gold" id="p_name">اسم الطالب</div>
+      <div class="field">
+        <label for="signerTitle">صفة الموقّع</label>
+        <input id="signerTitle" type="text" placeholder="مثال: مدير المدرسة">
+      </div>
 
-<div class="text" id="p_reason">وذلك تقديرًا لجهوده المميزة</div>
+      <div class="field">
+        <label for="dateInput">التاريخ</label>
+        <input id="dateInput" type="text" placeholder="آذار 2026">
+      </div>
 
-<div class="traits text" id="p_traits"></div>
+      <div class="field">
+        <label for="schoolNameInput">اسم المدرسة</label>
+        <input id="schoolNameInput" type="text" value="مدرسة الغزالي الابتدائية">
+      </div>
 
-<div class="text" id="p_message">مع أطيب التمنيات بالتوفيق</div>
+      <div class="field">
+        <label for="taglineInput">السطر التعريفي</label>
+        <input id="taglineInput" type="text" value="نرافق الطالب في رحلته نحو ذاته">
+      </div>
 
-<div class="footer">
-<div id="p_sign">الإدارة</div>
-<div id="date"></div>
-</div>
+      <div class="btns">
+        <button class="btn-primary" onclick="downloadPNG()">تحميل PNG</button>
+        <button class="btn-secondary" onclick="downloadPDF()">تحميل PDF</button>
+      </div>
+    </aside>
 
-</div>
-</div>
+    <main class="preview-wrap">
+      <div class="preview-top">
+        <h2>المعاينة الحية</h2>
+        <div class="hint">ضع ملف الشعار باسم <b>ghazali-logo.png</b> في نفس المجلد</div>
+      </div>
 
-</div>
+      <div class="certificate-shell">
+        <div id="certificate" class="certificate tpl-formal">
+          <div class="grid-frame"></div>
 
-<script>
-const inputs = document.querySelectorAll("input, textarea, select");
+          <div class="ornament corner-ring" style="top:-80px; right:-60px;"></div>
+          <div class="ornament corner-ring" style="bottom:-95px; left:-65px;"></div>
 
-inputs.forEach(i => i.addEventListener("input", update));
+          <header class="header">
+            <div class="logo-wrap">
+              <img id="logo" src="ghazali-logo.png" alt="شعار المدرسة" onerror="this.style.display='none'">
+            </div>
 
-function update(){
-  document.getElementById("p_name").innerText = name.value || "اسم الطالب";
-  document.getElementById("p_title").innerText = title.value || "شهادة تقدير";
-  document.getElementById("p_reason").innerText = reason.value;
-  document.getElementById("p_message").innerText = message.value;
-  document.getElementById("p_sign").innerText = sign.value || "الإدارة";
+            <div class="school-block">
+              <h1 class="school-name" id="schoolName">مدرسة الغزالي الابتدائية</h1>
+              <div class="school-tagline" id="schoolTagline">نرافق الطالب في رحلته نحو ذاته</div>
+            </div>
+          </header>
 
-  // الصفات
-  let t = traits.value.split(",");
-  document.getElementById("p_traits").innerHTML = t.map(x=>`<span>${x}</span>`).join("");
+          <div class="header-line"></div>
 
-  // التاريخ
-  document.getElementById("date").innerText = new Date().toLocaleDateString("ar");
+          <section class="content">
+            <div class="kicker" id="kicker">شهادة معتمدة</div>
+            <div class="medal-badge" id="medalBadge">وسام</div>
+            <h2 class="title" id="previewTitle">شهادة تقدير</h2>
+            <div class="title-accent"></div>
+            <p class="reason" id="previewReason">تقديرًا لتميّزه واجتهاده ومساهمته الإيجابية.</p>
+            <h3 class="student-name name-1" id="previewName">اسم الطالب</h3>
+            <div class="highlight" id="previewHighlight">مثال مشرّف في السلوك والتميّز</div>
+            <div class="traits" id="previewTraits"></div>
+            <div class="message" id="previewMessage">نفخر بك، ونتمنى لك مزيدًا من التألق والنجاح في مسيرتك التعليمية.</div>
+          </section>
 
-  applyTemplate();
-}
+          <footer class="footer">
+            <div>
+              <span class="signature-title" id="previewSignerTitle">مدير المدرسة</span>
+              <span class="signature-name" id="previewSigner">إدارة المدرسة</span>
+            </div>
+            <div id="previewDate">آذار 2026</div>
+          </footer>
+        </div>
+      </div>
+    </main>
+  </div>
 
-function applyTemplate(){
-  let t = template.value;
+  <script>
+    const els = {
+      template: document.getElementById('template'),
+      studentName: document.getElementById('studentName'),
+      title: document.getElementById('title'),
+      reason: document.getElementById('reason'),
+      highlight: document.getElementById('highlight'),
+      traits: document.getElementById('traits'),
+      message: document.getElementById('message'),
+      signer: document.getElementById('signer'),
+      signerTitle: document.getElementById('signerTitle'),
+      dateInput: document.getElementById('dateInput'),
+      schoolNameInput: document.getElementById('schoolNameInput'),
+      taglineInput: document.getElementById('taglineInput'),
 
-  let cert = document.getElementById("cert");
+      certificate: document.getElementById('certificate'),
+      previewTitle: document.getElementById('previewTitle'),
+      previewReason: document.getElementById('previewReason'),
+      previewName: document.getElementById('previewName'),
+      previewHighlight: document.getElementById('previewHighlight'),
+      previewTraits: document.getElementById('previewTraits'),
+      previewMessage: document.getElementById('previewMessage'),
+      previewSigner: document.getElementById('previewSigner'),
+      previewSignerTitle: document.getElementById('previewSignerTitle'),
+      previewDate: document.getElementById('previewDate'),
+      schoolName: document.getElementById('schoolName'),
+      schoolTagline: document.getElementById('schoolTagline'),
+      kicker: document.getElementById('kicker'),
+      medalBadge: document.getElementById('medalBadge'),
+    };
 
-  cert.style.border = "none";
+    const templates = {
+      formal: {
+        title: 'شهادة تقدير',
+        kicker: 'شهادة معتمدة',
+        reason: 'تقديرًا لتميّزه واجتهاده ومشاركته الإيجابية.',
+        highlight: 'مثال مشرّف في السلوك والتميّز',
+        message: 'نفخر بك، ونتمنى لك مزيدًا من التألق والنجاح في مسيرتك التعليمية.',
+        signerTitle: 'مدير المدرسة',
+        signer: 'إدارة المدرسة'
+      },
+      academic: {
+        title: 'شهادة إنجاز أكاديمي',
+        kicker: 'تميّز أكاديمي',
+        reason: 'تقديرًا لتفوّقه العلمي والتزامه المثابر في مسيرته التعليمية.',
+        highlight: 'إنجاز أكاديمي يستحق الإشادة',
+        message: 'لقد كان تفوقك ثمرة اجتهادك وعزيمتك، فهنيئًا لك هذا التميّز المشرف.',
+        signerTitle: 'إدارة المدرسة',
+        signer: 'إدارة المدرسة'
+      },
+      kids: {
+        title: 'شهادة تشجيع',
+        kicker: 'تشجيع ومحبة',
+        reason: 'يسرّنا أن نقدّم هذه الشهادة تقديرًا لروحك الجميلة وجهودك الطيبة.',
+        highlight: 'أبدعتَ... فاستحققتَ التقدير',
+        message: 'نحن سعداء بما تبذله من جهد، ونتمنى لك أيامًا مليئة بالنجاح والفرح.',
+        signerTitle: 'المربي/ة',
+        signer: 'معلم/ة الصف'
+      },
+      season: {
+        title: 'شهادة مناسبة',
+        kicker: 'مناسبة خاصة',
+        reason: 'يسرّنا أن نهديك هذه الشهادة في هذه المناسبة السعيدة.',
+        highlight: 'لحظة جميلة تستحق الاحتفاء',
+        message: 'نسأل الله لك أيامًا عامرة بالخير والبهجة، وأن تبقى متألقًا في كل محطة.',
+        signerTitle: 'إدارة المدرسة',
+        signer: 'إدارة المدرسة'
+      },
+      thanks: {
+        title: 'شهادة شكر وتقدير',
+        kicker: 'شكر وامتنان',
+        reason: 'تقديرًا للجهود الطيبة والمساهمة الإيجابية والدعم البنّاء.',
+        highlight: 'كل الشكر على العطاء الكريم',
+        message: 'نثمّن جهودكم، ونعبر عن بالغ تقديرنا لما قدمتموه من أثر طيب.',
+        signerTitle: 'إدارة المدرسة',
+        signer: 'إدارة المدرسة'
+      },
+      teacher: {
+        title: 'شهادة تقدير لمعلم/ة',
+        kicker: 'عطاء تربوي',
+        reason: 'تقديرًا لجهوده/ها المخلصة وعطائه/ها التربوي المتميّز.',
+        highlight: 'رسالة سامية وأثر لا يُنسى',
+        message: 'كل الامتنان لعطائكم الصادق ودوركم النبيل في بناء الطالب إنسانيًا ومعرفيًا.',
+        signerTitle: 'إدارة المدرسة',
+        signer: 'إدارة المدرسة'
+      },
+      honor: {
+        title: 'شهادة فخر واعتزاز',
+        kicker: 'فخر واعتزاز',
+        reason: 'بكل فخر، نكرّم هذا التميّز الذي يعكس قيمة الاجتهاد والالتزام.',
+        highlight: 'مصدر فخر واعتزاز لمدرسة الغزالي',
+        message: 'إن هذا الإنجاز يعكس شخصية جادة ومشرقة، ونحن نعتز بك وبما حققته.',
+        signerTitle: 'إدارة المدرسة',
+        signer: 'إدارة المدرسة'
+      },
+      medal: {
+        title: 'وسام الغزالي',
+        kicker: 'أعلى شهادة',
+        reason: 'تمنح هذه الشهادة تقديرًا لتميّز استثنائي يجمع بين الإنجاز والقيم والأثر.',
+        highlight: 'وسام الغزالي للتميّز الرفيع',
+        message: 'هذا الوسام هو أرفع تقدير تمنحه المدرسة، اعتزازًا بمن جمع بين التفوق والأخلاق والحضور المُلهم.',
+        signerTitle: 'إدارة المدرسة',
+        signer: 'إدارة المدرسة'
+      }
+    };
 
-  if(t=="formal"){
-    cert.style.border="4px solid #1F7A63";
-  }
-  if(t=="medal"){
-    cert.style.border="6px solid #D4AF37";
-  }
-}
+    function autoDateArabic() {
+      const now = new Date();
+      const fmt = new Intl.DateTimeFormat('ar', { year:'numeric', month:'long', day:'numeric' });
+      return fmt.format(now);
+    }
 
-function downloadPNG(){
-  html2canvas(cert).then(canvas=>{
-    let a=document.createElement("a");
-    a.href=canvas.toDataURL();
-    a.download="certificate.png";
-    a.click();
-  });
-}
+    function nameSizeClass(name) {
+      const clean = (name || '').trim();
+      const len = clean.length;
+      if (len <= 13) return 'name-1';
+      if (len <= 22) return 'name-2';
+      if (len <= 32) return 'name-3';
+      return 'name-4';
+    }
 
-function downloadPDF(){
-  html2canvas(cert).then(canvas=>{
-    const { jsPDF } = window.jspdf;
-    let pdf = new jsPDF();
-    pdf.addImage(canvas.toDataURL("image/png"),"PNG",10,10,190,120);
-    pdf.save("certificate.pdf");
-  });
-}
+    function renderTraits(input) {
+      const parts = (input || '')
+        .split(/[،,]/)
+        .map(s => s.trim())
+        .filter(Boolean)
+        .slice(0, 8);
 
-update();
-</script>
+      if (!parts.length) return '';
+      return parts.map(t => `<span class="trait">${escapeHtml(t)}</span>`).join('');
+    }
 
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function applyTemplateClass(key) {
+      els.certificate.className = 'certificate';
+      els.certificate.classList.add(`tpl-${key}`);
+    }
+
+    function setTemplateDefaults(key, force = false) {
+      const t = templates[key];
+      if (!t) return;
+
+      if (force || !els.title.value.trim()) els.title.value = t.title;
+      if (force || !els.reason.value.trim()) els.reason.value = t.reason;
+      if (force || !els.highlight.value.trim()) els.highlight.value = t.highlight;
+      if (force || !els.message.value.trim()) els.message.value = t.message;
+      if (force || !els.signer.value.trim()) els.signer.value = t.signer;
+      if (force || !els.signerTitle.value.trim()) els.signerTitle.value = t.signerTitle;
+    }
+
+    function updatePreview() {
+      const currentTpl = els.template.value;
+      const tpl = templates[currentTpl];
+
+      applyTemplateClass(currentTpl);
+
+      const title = els.title.value.trim() || tpl.title;
+      const name = els.studentName.value.trim() || 'اسم الطالب';
+      const reason = els.reason.value.trim() || tpl.reason;
+      const highlight = els.highlight.value.trim() || tpl.highlight;
+      const message = els.message.value.trim() || tpl.message;
+      const signer = els.signer.value.trim() || tpl.signer;
+      const signerTitle = els.signerTitle.value.trim() || tpl.signerTitle;
+      const dateVal = els.dateInput.value.trim() || autoDateArabic();
+      const schoolName = els.schoolNameInput.value.trim() || 'مدرسة الغزالي الابتدائية';
+      const tagline = els.taglineInput.value.trim() || 'نرافق الطالب في رحلته نحو ذاته';
+
+      els.previewTitle.textContent = title;
+      els.previewName.textContent = name;
+      els.previewReason.textContent = reason;
+      els.previewHighlight.textContent = highlight;
+      els.previewMessage.textContent = message;
+      els.previewSigner.textContent = signer;
+      els.previewSignerTitle.textContent = signerTitle;
+      els.previewDate.textContent = dateVal;
+      els.schoolName.textContent = schoolName;
+      els.schoolTagline.textContent = tagline;
+      els.kicker.textContent = tpl.kicker;
+      els.previewTraits.innerHTML = renderTraits(els.traits.value);
+
+      els.previewName.classList.remove('name-1','name-2','name-3','name-4');
+      els.previewName.classList.add(nameSizeClass(name));
+
+      els.medalBadge.textContent = currentTpl === 'medal' ? 'وسام' : '';
+      els.previewTraits.style.display = els.previewTraits.innerHTML ? 'flex' : 'none';
+      els.previewHighlight.style.display = highlight ? 'inline-block' : 'none';
+    }
+
+    async function downloadPNG() {
+      const cert = document.getElementById('certificate');
+      const canvas = await html2canvas(cert, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff'
+      });
+      const link = document.createElement('a');
+      link.download = 'ghazali-certificate.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    async function downloadPDF() {
+      const cert = document.getElementById('certificate');
+      const canvas = await html2canvas(cert, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff'
+      });
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'px',
+        format: [1123, 794]
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      pdf.addImage(imgData, 'PNG', 0, 0, 1123, 794);
+      pdf.save('ghazali-certificate.pdf');
+    }
+
+    els.template.addEventListener('change', () => {
+      setTemplateDefaults(els.template.value, true);
+      updatePreview();
+    });
+
+    [
+      els.studentName, els.title, els.reason, els.highlight, els.traits,
+      els.message, els.signer, els.signerTitle, els.dateInput,
+      els.schoolNameInput, els.taglineInput
+    ].forEach(el => el.addEventListener('input', updatePreview));
+
+    // بداية جاهزة
+    els.dateInput.value = autoDateArabic();
+    setTemplateDefaults('formal', true);
+    els.traits.value = 'مبدع، مجتهد، متألق';
+    updatePreview();
+  </script>
 </body>
 </html>
